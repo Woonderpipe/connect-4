@@ -1,0 +1,26 @@
+name: Bug report
+description: Report a reproducible problem
+title: "bug: "
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: Do not include secrets, personal data, or security vulnerabilities.
+  - type: textarea
+    id: description
+    attributes:
+      label: What happened?
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: How can we reproduce it?
+      required: true
+  - type: input
+    id: platform
+    attributes:
+      label: Platform and version
+      placeholder: Browser or Android device/version
+    validations:
+      required: true
+

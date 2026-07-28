@@ -1,0 +1,35 @@
+# Dependencies and package-manager state
+node_modules
+.pnpm-store
+.npm
+
+# Build outputs and caches
+.next
+out
+build
+dist
+.turbo
+.cache
+coverage
+test-results
+playwright-report
+*.tsbuildinfo
+
+# Local-only configuration and secrets
+.env
+.env.*
+
+# Native/mobile build products not needed by the web container
+android/.gradle
+android/app/build
+
+# VCS and editor noise
+.git
+.github
+.vscode
+.idea
+*.log
+*.tmp
+*.temp
+Thumbs.db
+.DS_Store

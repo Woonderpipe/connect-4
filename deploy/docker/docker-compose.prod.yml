@@ -1,0 +1,48 @@
+services:
+  app:
+    build:
+      context: ../..
+      dockerfile: deploy/docker/Dockerfile
+      args:
+        NEXT_PUBLIC_SITE_URL: ${NEXT_PUBLIC_SITE_URL:-https://example.com}
+        NEXT_PUBLIC_SERVERLESS: ${NEXT_PUBLIC_SERVERLESS:-true}
+        NEXT_PUBLIC_FOOTER_TEXT: ${NEXT_PUBLIC_FOOTER_TEXT:-Connect 4}
+        NEXT_PUBLIC_POCKETBASE_URL: ${NEXT_PUBLIC_POCKETBASE_URL:-https://api.example.com}
+        NEXT_PUBLIC_ONLINE_TEST_MODE: "false"
+        ONLINE_TEST_MODE: "false"
+        NEXT_PUBLIC_UMAMI_ENABLED: ${NEXT_PUBLIC_UMAMI_ENABLED:-false}
+        NEXT_PUBLIC_UMAMI_HOST: ${NEXT_PUBLIC_UMAMI_HOST:-}
+        NEXT_PUBLIC_UMAMI_WEB_WEBSITE_ID: ${NEXT_PUBLIC_UMAMI_WEB_WEBSITE_ID:-}
+        NEXT_PUBLIC_UMAMI_ANDROID_WEBSITE_ID: ${NEXT_PUBLIC_UMAMI_ANDROID_WEBSITE_ID:-}
+        NEXT_PUBLIC_PRIVACY_CONTACT_NAME: ${NEXT_PUBLIC_PRIVACY_CONTACT_NAME:-}
+        NEXT_PUBLIC_PRIVACY_CONTACT_EMAIL: ${NEXT_PUBLIC_PRIVACY_CONTACT_EMAIL:-}
+        NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION: ${NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION:-}
+        NEXT_PUBLIC_BING_SITE_VERIFICATION: ${NEXT_PUBLIC_BING_SITE_VERIFICATION:-}
+    image: connect4-app:prod
+    container_name: connect4-app-prod
+    restart: unless-stopped
+    env_file:
+      - path: ./.env.production
+        required: false
+    networks:
+      - proxy-net
+    expose:
+      - "4444"
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:4444/api/health/ping"]
+      interval: 30s
+      timeout: 10s
+      start_period: 30s
+      retries: 3
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    read_only: true
+    tmpfs:
+      - /tmp:size=64m,mode=1777
+      - /app/.next/cache:size=128m,mode=1777
+
+networks:
+  proxy-net:
+    external: true

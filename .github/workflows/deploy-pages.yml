@@ -1,0 +1,60 @@
+name: Deploy GitHub Pages
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: github-pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: Build GitHub Pages site
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11.15.1
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
+      - run: pnpm install --frozen-lockfile
+      - name: Build static site
+        env:
+          NEXT_PUBLIC_SITE_URL: ${{ vars.PAGES_SITE_URL }}
+          NEXT_PUBLIC_BASE_PATH: ${{ vars.PAGES_BASE_PATH }}
+          NEXT_PUBLIC_SERVERLESS: 'true'
+          NEXT_PUBLIC_FOOTER_TEXT: ${{ vars.NEXT_PUBLIC_FOOTER_TEXT }}
+          NEXT_PUBLIC_PRIVACY_CONTACT_NAME: ${{ vars.NEXT_PUBLIC_PRIVACY_CONTACT_NAME }}
+          NEXT_PUBLIC_PRIVACY_CONTACT_EMAIL: ${{ vars.NEXT_PUBLIC_PRIVACY_CONTACT_EMAIL }}
+          NEXT_PUBLIC_UMAMI_ENABLED: ${{ vars.NEXT_PUBLIC_UMAMI_ENABLED }}
+          NEXT_PUBLIC_UMAMI_HOST: ${{ vars.NEXT_PUBLIC_UMAMI_HOST }}
+          NEXT_PUBLIC_UMAMI_WEB_WEBSITE_ID: ${{ vars.NEXT_PUBLIC_UMAMI_WEB_WEBSITE_ID }}
+          NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION: ${{ vars.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION }}
+          NEXT_PUBLIC_BING_SITE_VERIFICATION: ${{ vars.NEXT_PUBLIC_BING_SITE_VERIFICATION }}
+        run: pnpm pages:build
+      - name: Upload GitHub Pages artifact
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: out
+
+  deploy:
+    name: Deploy GitHub Pages site
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy GitHub Pages artifact
+        id: deployment
+        uses: actions/deploy-pages@v4

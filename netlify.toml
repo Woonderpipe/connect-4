@@ -1,0 +1,10 @@
+[build]
+command = "corepack pnpm build"
+publish = ".next"
+
+[build.environment]
+NODE_VERSION = "24"
+NEXT_PUBLIC_SERVERLESS = "true"
+NEXT_PUBLIC_ONLINE_TEST_MODE = "false"
+ONLINE_TEST_MODE = "false"
+NEXT_TELEMETRY_DISABLED = "1"

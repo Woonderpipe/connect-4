@@ -1,0 +1,98 @@
+name: CI
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  web:
+    name: Web quality
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11.15.1
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm lint
+      - run: pnpm typecheck
+      - run: pnpm build
+      - run: pnpm notices:check
+      - run: pnpm audit --audit-level=moderate
+
+  licenses:
+    name: License catalog
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11.15.1
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+      - uses: android-actions/setup-android@v3
+      - run: sdkmanager "platform-tools" "platforms;android-36" "build-tools;36.0.0"
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm mobile:build
+        env:
+          NEXT_PUBLIC_SERVERLESS: 'true'
+          NEXT_PUBLIC_SITE_URL: https://example.com
+      - run: node scripts/capacitor.mjs sync android
+      - run: pnpm android:bundle:check
+        env:
+          NEXT_PUBLIC_SERVERLESS: 'true'
+          NEXT_PUBLIC_SITE_URL: https://example.com
+      - run: pnpm licenses:check
+      - run: pnpm notices:check
+      - uses: actions/upload-artifact@v4
+        with:
+          name: license-review-report
+          path: |
+            docs/legal/license-review-report.md
+            docs/third_party/THIRD_PARTY_NOTICES.md
+
+  browser:
+    name: Browser and mobile E2E
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11.15.1
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm exec playwright install --with-deps chromium
+      - run: pnpm test:e2e:mobile
+      - run: pnpm test:e2e:licenses
+      - run: pnpm test:e2e:online
+
+  secret-scan:
+    name: Secret and history scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -1,0 +1,67 @@
+{
+  "slides": [
+    {
+      "layout": "hero-right",
+      "output": "en/01-hero.png",
+      "background": "01-hero.png",
+      "screen": "01-gameplay.png",
+      "headline": "Classic strategy.\nFresh energy.",
+      "subhead": "Drop discs, connect four, and own the board.",
+      "alt": "A lively four-in-a-row match framed by glossy red and yellow discs."
+    },
+    {
+      "layout": "modes-split",
+      "output": "en/02-modes.png",
+      "background": "02-modes.png",
+      "screen": "02-modes.png",
+      "headline": "Play\nyour way",
+      "subhead": "Solo AI, local duels, or online with friends.",
+      "alt": "Game settings for AI, local two-player, and online matches."
+    },
+    {
+      "layout": "variants-bottom",
+      "output": "en/03-variants.png",
+      "background": "03-variants.png",
+      "screen": "03-variants.png",
+      "headline": "Every match\ncan change",
+      "subhead": "Gravity shifts, bombs, power-ups, and more.",
+      "alt": "Enabled alternate modes including gravity, bombs, Pop Out, and power-ups."
+    },
+    {
+      "layout": "online-diagonal",
+      "output": "en/04-online.png",
+      "background": "04-online.png",
+      "screen": "04-online.png",
+      "headline": "Friends are\none code away",
+      "subhead": "Create a room, share the link, and start the duel.",
+      "alt": "Online match controls for creating, joining, and sharing a game."
+    },
+    {
+      "layout": "custom-bottom",
+      "output": "en/05-customize.png",
+      "background": "05-customize.png",
+      "screen": "05-customization.png",
+      "headline": "Make it\nyours",
+      "subhead": "Colors, dark mode, language, and tabletop play.",
+      "alt": "Customization controls for colors, language, dark mode, and tabletop mode."
+    },
+    {
+      "layout": "languages-stack",
+      "output": "en/06-languages.png",
+      "background": "06-languages.png",
+      "screen": "06-arabic-victory.png",
+      "headline": "Play in your\nlanguage",
+      "subhead": "English / German / Arabic with full RTL support.",
+      "alt": "Arabic right-to-left victory screen surrounded by celebratory game pieces."
+    }
+  ],
+  "extra": {
+    "layout": "tabletop-perspective",
+    "output": "en/07-tabletop-together.png",
+    "background": "07-tabletop-lifestyle-v2.png",
+    "screen": "07-tabletop.png",
+    "headline": "Two players.\nOne screen.",
+    "subhead": "Face-to-face fun. No second device needed.",
+    "alt": "Two people playing tabletop mode together on one premium phone from opposite sides."
+  }
+}

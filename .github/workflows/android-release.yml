@@ -1,0 +1,101 @@
+name: Android release
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    name: Build and publish Android release
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11.15.1
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+      - uses: android-actions/setup-android@v3
+      - run: sdkmanager "platform-tools" "platforms;android-36" "build-tools;36.0.0"
+      - run: pnpm install --frozen-lockfile
+      - name: Validate release tag and prepare version
+        id: version
+        shell: bash
+        run: |
+          VERSION_NAME="${GITHUB_REF_NAME#v}"
+          if [[ ! "$VERSION_NAME" =~ ^([0-9]+)\.([0-9]+)\.([0-9]+)$ ]]; then
+            echo "Release tags must use vMAJOR.MINOR.PATCH." >&2
+            exit 1
+          fi
+          IFS='.' read -r MAJOR MINOR PATCH <<< "$VERSION_NAME"
+          if (( MAJOR > 999 || MINOR > 999 || PATCH > 999 )); then
+            echo "Each semantic version segment must be at most 999." >&2
+            exit 1
+          fi
+          VERSION_CODE=$((10#$MAJOR * 1000000 + 10#$MINOR * 1000 + 10#$PATCH))
+          if (( VERSION_CODE < 1 )); then
+            echo "Android version code must be positive." >&2
+            exit 1
+          fi
+          test "$(node -p "require('./package.json').version")" = "$VERSION_NAME"
+          echo "name=$VERSION_NAME" >> "$GITHUB_OUTPUT"
+          echo "code=$VERSION_CODE" >> "$GITHUB_OUTPUT"
+      - name: Verify web quality
+        run: pnpm prepublish:check
+      - name: Restore Android signing key
+        shell: bash
+        env:
+          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+          test -n "$ANDROID_KEYSTORE_BASE64" && test -n "$ANDROID_KEYSTORE_PASSWORD" && test -n "$ANDROID_KEY_ALIAS" && test -n "$ANDROID_KEY_PASSWORD"
+          printf '%s' "$ANDROID_KEYSTORE_BASE64" | base64 --decode > android/release-upload-key.jks
+          {
+            echo 'storeFile=release-upload-key.jks'
+            echo "storePassword=$ANDROID_KEYSTORE_PASSWORD"
+            echo "keyAlias=$ANDROID_KEY_ALIAS"
+            echo "keyPassword=$ANDROID_KEY_PASSWORD"
+          } > android/keystore.properties
+      - name: Build signed APK and AAB
+        env:
+          REQUIRE_NON_EXAMPLE_SITE_URL: 'true'
+          NEXT_PUBLIC_SITE_URL: ${{ vars.NEXT_PUBLIC_SITE_URL }}
+          NEXT_PUBLIC_SERVERLESS: ${{ vars.NEXT_PUBLIC_SERVERLESS || 'true' }}
+          NEXT_PUBLIC_POCKETBASE_URL: ${{ vars.NEXT_PUBLIC_POCKETBASE_URL }}
+          NEXT_PUBLIC_FOOTER_TEXT: ${{ vars.NEXT_PUBLIC_FOOTER_TEXT }}
+          NEXT_PUBLIC_PRIVACY_CONTACT_NAME: ${{ vars.NEXT_PUBLIC_PRIVACY_CONTACT_NAME }}
+          NEXT_PUBLIC_PRIVACY_CONTACT_EMAIL: ${{ vars.NEXT_PUBLIC_PRIVACY_CONTACT_EMAIL }}
+          NEXT_PUBLIC_UMAMI_ENABLED: ${{ vars.NEXT_PUBLIC_UMAMI_ENABLED }}
+          NEXT_PUBLIC_UMAMI_HOST: ${{ vars.NEXT_PUBLIC_UMAMI_HOST }}
+        run: pnpm android:bundle -- --version-code=${{ steps.version.outputs.code }} --version-name=${{ steps.version.outputs.name }}
+      - name: Prepare release files
+        shell: bash
+        run: |
+          mkdir -p release-assets release-internal
+          cp android/app/build/outputs/apk/release/app-release.apk "release-assets/connect4.apk"
+          (cd release-assets && sha256sum *.apk > SHA256SUMS.txt)
+          cp android/app/build/outputs/bundle/release/app-release.aab "release-internal/connect4-v${{ steps.version.outputs.name }}.aab"
+          (cd release-internal && sha256sum *.aab > SHA256SUMS.txt)
+      - uses: actions/upload-artifact@v4
+        with:
+          name: connect4-v${{ steps.version.outputs.name }}-play-upload
+          path: release-internal/
+      - uses: softprops/action-gh-release@v2
+        with:
+          generate_release_notes: true
+          files: |
+            release-assets/*.apk
+            release-assets/SHA256SUMS.txt

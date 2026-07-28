@@ -1,0 +1,54 @@
+@import "tailwindcss";
+
+html,
+body {
+  min-height: 100%;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
+body {
+  margin: 0;
+  overscroll-behavior-y: none;
+  font-family: 'Google Sans', 'Google Sans Text', Roboto, 'Segoe UI', Arial, sans-serif;
+}
+
+.mobile-app-shell {
+  min-height: 100dvh;
+  touch-action: pan-y;
+}
+
+.mobile-safe-content {
+  padding-top: max(1.5rem, env(safe-area-inset-top));
+  padding-bottom: max(2rem, env(safe-area-inset-bottom));
+  padding-left: max(1rem, env(safe-area-inset-left));
+  padding-right: max(1rem, env(safe-area-inset-right));
+}
+
+.custom-color-picker .react-colorful {
+  width: 100%;
+  height: 120px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.custom-color-picker .react-colorful__pointer {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 3px solid #fff;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.custom-color-picker .react-colorful__hue {
+  height: 16px;
+  border-radius: 8px;
+  margin-top: 8px;
+}

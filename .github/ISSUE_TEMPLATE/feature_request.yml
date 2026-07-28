@@ -1,0 +1,22 @@
+name: Feature request
+description: Suggest an improvement
+title: "feature: "
+labels: [enhancement]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem would this solve?
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: What would you like to change?
+      required: true
+  - type: checkboxes
+    id: privacy
+    attributes:
+      label: Impact review
+      options:
+        - label: I considered privacy, permissions, external services, and licensing impact.
+
