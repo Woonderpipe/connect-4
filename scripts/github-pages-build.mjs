@@ -31,10 +31,15 @@ function requireSecurePublicUrl(value) {
   return url.toString().replace(/\/$/, '');
 }
 
-const configuredBasePath = process.env.NEXT_PUBLIC_BASE_PATH?.trim();
-const basePath = normalizeBasePath(configuredBasePath ? configuredBasePath : defaultBasePath);
+// 1. Explicitly check if NEXT_PUBLIC_BASE_PATH was provided (even if empty string "")
+const configuredBasePath = process.env.NEXT_PUBLIC_BASE_PATH !== undefined 
+  ? process.env.NEXT_PUBLIC_BASE_PATH 
+  : defaultBasePath;
+
+const basePath = normalizeBasePath(configuredBasePath);
 const siteUrl = requireSecurePublicUrl(process.env.NEXT_PUBLIC_SITE_URL || defaultSiteUrl);
 const sitePath = new URL(siteUrl).pathname.replace(/\/$/, '');
+
 if (sitePath !== basePath) {
   throw new Error(`NEXT_PUBLIC_SITE_URL path "${sitePath || '/'}" must match NEXT_PUBLIC_BASE_PATH "${basePath || '/'}".`);
 }
@@ -58,5 +63,17 @@ const result = spawnSync(process.execPath, [nextCli, 'build'], {
 });
 
 if (result.status !== 0) process.exit(result.status ?? 1);
-mkdirSync(resolve(import.meta.dirname, '..', 'out'), { recursive: true });
-writeFileSync(resolve(import.meta.dirname, '..', 'out', '.nojekyll'), '');
+
+const outDir = resolve(import.meta.dirname, '..', 'out');
+mkdirSync(outDir, { recursive: true });
+
+// Prevent GitHub Pages from running Jekyll on Next.js assets
+writeFileSync(resolve(outDir, '.nojekyll'), '');
+
+// 2. Extract domain name dynamically from siteUrl (e.g. "connect4.sharbel.de")
+const domainName = new URL(siteUrl).hostname;
+
+// Only write CNAME if using a custom domain (skips standard *.github.io domains)
+if (!domainName.endsWith('.github.io')) {
+  writeFileSync(resolve(outDir, 'CNAME'), domainName);
+}
