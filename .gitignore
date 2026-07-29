@@ -106,6 +106,9 @@ deploy/docker/caddy/
 
 deploy/vps/
 
+# Locally ignored deployment notes
+docs/deployment/github-pages.md
+
 # Local signing, provider configuration, and deployment material
 android/keystore.properties
 android/app/google-services.json

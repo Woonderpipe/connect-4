@@ -100,8 +100,10 @@ jobs:
         run: |
           APK="android/app/build/outputs/apk/release/app-release.apk"
           AAB="android/app/build/outputs/bundle/release/app-release.aab"
-          sha256sum "$APK" > sha.txt
-          sha256sum "$AAB" >> sha.txt
+          cp "$APK" connect4.apk
+          cp "$AAB" connect4.aab
+          sha256sum connect4.apk > SHA256SUMS.txt
+          sha256sum connect4.aab >> SHA256SUMS.txt
 
       - name: Upload AAB as workflow artifact
         uses: actions/upload-artifact@v4
@@ -116,5 +118,5 @@ jobs:
           generate_release_notes: true
           append_body: true
           files: |
-            android/app/build/outputs/apk/release/app-release.apk
-            sha.txt
+            connect4.apk
+            SHA256SUMS.txt

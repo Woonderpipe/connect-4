@@ -6,7 +6,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/Woonderpipe/connect-four-private/releases/latest/download/connect4.apk"><img alt="Download latest Android APK" src="https://img.shields.io/badge/Download-latest%20Android%20APK-3DDC84?logo=android&logoColor=white" /></a>
+  <a href="https://github.com/Woonderpipe/connect-4-public/releases/latest/download/connect4.apk"><img alt="Download latest Android APK" src="https://img.shields.io/badge/Download-latest%20Android%20APK-3DDC84?logo=android&logoColor=white" /></a>
   <img alt="Next.js" src="https://img.shields.io/badge/Next.js-16-black?logo=nextdotjs" />
   <img alt="React" src="https://img.shields.io/badge/React-19-149eca?logo=react&logoColor=white" />
   <img alt="TypeScript" src="https://img.shields.io/badge/TypeScript-strict-3178c6?logo=typescript&logoColor=white" />
@@ -14,7 +14,7 @@
 </p>
 
 > [!TIP]
-> **Want to play on Android?** [Download the latest APK](https://github.com/Woonderpipe/connect-four-private/releases/latest/download/connect4.apk). Verify it with the accompanying `SHA256SUMS.txt` on the [latest release](https://github.com/Woonderpipe/connect-four-private/releases/latest).
+> **Want to play on Android?** [Download the latest APK](https://github.com/Woonderpipe/connect-4-public/releases/latest/download/connect4.apk). Verify it with the accompanying `SHA256SUMS.txt` on the [latest release](https://github.com/Woonderpipe/connect-4-public/releases/latest).
 
 ## Quick Start
 
