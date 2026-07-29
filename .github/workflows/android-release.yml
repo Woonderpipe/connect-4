@@ -68,5 +68,53 @@ jobs:
           fi
           
           test "$(node -p "require('./package.json').version")" = "$VERSION_NAME"
+          echo "tag=$RAW_TAG" >> "$GITHUB_OUTPUT"
           echo "name=$VERSION_NAME" >> "$GITHUB_OUTPUT"
           echo "code=$VERSION_CODE" >> "$GITHUB_OUTPUT"
+
+      - name: Prepare Android signing files
+        shell: bash
+        env:
+          KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+          if [[ -z "$KEYSTORE_BASE64" || -z "$KEYSTORE_PASSWORD" || -z "$KEY_ALIAS" || -z "$KEY_PASSWORD" ]]; then
+            echo "Missing required secrets: ANDROID_KEYSTORE_BASE64, ANDROID_KEYSTORE_PASSWORD, ANDROID_KEY_ALIAS, ANDROID_KEY_PASSWORD" >&2
+            exit 1
+          fi
+          printf '%s' "$KEYSTORE_BASE64" | base64 --decode > android/upload-keystore.jks
+          printf 'storeFile=upload-keystore.jks\nstorePassword=%s\nkeyAlias=%s\nkeyPassword=%s\n' "$KEYSTORE_PASSWORD" "$KEY_ALIAS" "$KEY_PASSWORD" > android/keystore.properties
+
+      - name: Build signed Android artifacts
+        env:
+          NEXT_PUBLIC_SERVERLESS: 'true'
+          NEXT_PUBLIC_SITE_URL: ${{ vars.PAGES_SITE_URL || vars.PUBLIC_SITE_URL || 'https://example.com' }}
+          ANDROID_VERSION_CODE: ${{ steps.version.outputs.code }}
+          ANDROID_VERSION_NAME: ${{ steps.version.outputs.name }}
+        run: pnpm android:bundle -- --version-code=${{ steps.version.outputs.code }} --version-name=${{ steps.version.outputs.name }}
+
+      - name: Create checksum file
+        shell: bash
+        run: |
+          APK="android/app/build/outputs/apk/release/app-release.apk"
+          AAB="android/app/build/outputs/bundle/release/app-release.aab"
+          sha256sum "$APK" > sha.txt
+          sha256sum "$AAB" >> sha.txt
+
+      - name: Upload AAB as workflow artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-aab-${{ steps.version.outputs.tag }}
+          path: android/app/build/outputs/bundle/release/app-release.aab
+
+      - name: Publish GitHub release assets
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.version.outputs.tag }}
+          generate_release_notes: true
+          append_body: true
+          files: |
+            android/app/build/outputs/apk/release/app-release.apk
+            sha.txt
