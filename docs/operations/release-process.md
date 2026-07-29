@@ -6,6 +6,8 @@ The web and Android outputs share one source project, but their distribution pat
 
 A web release is a validated production build deployed through the selected hosting platform. The deployment must provide the intended environment variables, public origin, privacy routes, health route, sitemap, and robots file.
 
+Local pushes run the repo pre-push hook after `pnpm install`. It executes the release checks locally and cancels the push if any generated artifact needs to be refreshed or if a step fails.
+
 ## Android
 
 A tagged Android release creates two outputs from the exported web assets:

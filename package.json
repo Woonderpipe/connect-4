@@ -33,6 +33,8 @@
     "licenses:check": "node scripts/check-open-source-licenses.mjs",
     "audit": "pnpm audit --audit-level=moderate",
     "prepublish:check": "pnpm lint && pnpm typecheck && pnpm build && pnpm audit",
+    "prepush": "node scripts/pre-push.mjs",
+    "postinstall": "node scripts/setup-git-hooks.mjs",
     "cap:telemetry:off": "cap telemetry off",
     "netlify:zip": "node scripts/netlify-source-zip.mjs",
     "licenses:publication-check": "node scripts/check-open-source-licenses.mjs --strict"

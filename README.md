@@ -25,6 +25,8 @@ pnpm dev
 
 Open [http://localhost:4444](http://localhost:4444).
 
+`pnpm install` also configures a local pre-push hook that runs the release checks and aborts the push if generated artifacts are stale or a step fails.
+
 <details>
 <summary><strong>Production build and quality checks</strong></summary>
 
