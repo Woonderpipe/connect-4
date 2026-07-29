@@ -49,24 +49,24 @@ jobs:
           # Determine raw tag name (from manual input or git ref)
           RAW_TAG="${INPUT_TAG:-$GITHUB_REF_NAME}"
           VERSION_NAME="${RAW_TAG#v}"
-          
+
           if [[ ! "$VERSION_NAME" =~ ^([0-9]+)\.([0-9]+)\.([0-9]+)$ ]]; then
             echo "Release tags must use vMAJOR.MINOR.PATCH. Received: '$RAW_TAG'" >&2
             exit 1
           fi
-          
+
           IFS='.' read -r MAJOR MINOR PATCH <<< "$VERSION_NAME"
           if (( MAJOR > 999 || MINOR > 999 || PATCH > 999 )); then
             echo "Each semantic version segment must be at most 999." >&2
             exit 1
           fi
-          
+
           VERSION_CODE=$((10#$MAJOR * 1000000 + 10#$MINOR * 1000 + 10#$PATCH))
           if (( VERSION_CODE < 1 )); then
             echo "Android version code must be positive." >&2
             exit 1
           fi
-          
+
           test "$(node -p "require('./package.json').version")" = "$VERSION_NAME"
           echo "tag=$RAW_TAG" >> "$GITHUB_OUTPUT"
           echo "name=$VERSION_NAME" >> "$GITHUB_OUTPUT"
