@@ -35,7 +35,7 @@ Set public values under **Settings → Secrets and variables → Actions → Var
 | `NEXT_PUBLIC_PRIVACY_CONTACT_EMAIL` | Public contact email | Public contact email |
 | `NEXT_PUBLIC_UMAMI_*` | Optional external analytics configuration | Optional external analytics configuration |
 
-The workflow maps these Pages-only values to the public Next.js build settings, always forces `NEXT_PUBLIC_SERVERLESS=true` and disables test routes.
+The workflow maps these Pages-only values to the public Next.js build settings, always forces `NEXT_PUBLIC_SERVERLESS=true` and disables test routes. If you use a custom domain, make sure `PAGES_SITE_URL` is set to that exact HTTPS origin and `PAGES_BASE_PATH` is `/`.
 
 ## Custom domain rollout
 
