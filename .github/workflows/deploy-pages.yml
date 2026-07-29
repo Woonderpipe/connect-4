@@ -30,7 +30,7 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - name: Build static site
         env:
-          NEXT_PUBLIC_SITE_URL: ${{ vars.PAGES_SITE_URL }}
+          NEXT_PUBLIC_SITE_URL: ${{ vars.PAGES_SITE_URL || vars.PUBLIC_SITE_URL }}
           NEXT_PUBLIC_BASE_PATH: ${{ vars.PAGES_BASE_PATH }}
           NEXT_PUBLIC_SERVERLESS: 'true'
           NEXT_PUBLIC_FOOTER_TEXT: ${{ vars.NEXT_PUBLIC_FOOTER_TEXT }}
