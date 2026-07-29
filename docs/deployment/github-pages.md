@@ -29,13 +29,14 @@ Set public values under **Settings → Secrets and variables → Actions → Var
 | Variable | Private trial value | Custom-domain value |
 | --- | --- | --- |
 | `PAGES_SITE_URL` | Leave unset to use the repository Pages URL | `https://your-domain.example` |
+| `PUBLIC_SITE_URL` | Legacy alias for the same value | `https://your-domain.example` |
 | `PAGES_BASE_PATH` | Leave unset to use `/connect-four-private` | `/` |
 | `NEXT_PUBLIC_FOOTER_TEXT` | Optional footer label | Optional footer label |
 | `NEXT_PUBLIC_PRIVACY_CONTACT_NAME` | Public contact name | Public contact name |
 | `NEXT_PUBLIC_PRIVACY_CONTACT_EMAIL` | Public contact email | Public contact email |
 | `NEXT_PUBLIC_UMAMI_*` | Optional external analytics configuration | Optional external analytics configuration |
 
-The workflow maps these Pages-only values to the public Next.js build settings, always forces `NEXT_PUBLIC_SERVERLESS=true` and disables test routes. If you use a custom domain, make sure `PAGES_SITE_URL` is set to that exact HTTPS origin and `PAGES_BASE_PATH` is `/`.
+The workflow maps these Pages-only values to the public Next.js build settings, always forces `NEXT_PUBLIC_SERVERLESS=true` and disables test routes. If you use a custom domain, make sure `PAGES_SITE_URL` or `PUBLIC_SITE_URL` is set to that exact HTTPS origin and `PAGES_BASE_PATH` is `/`.
 
 ## Custom domain rollout
 
