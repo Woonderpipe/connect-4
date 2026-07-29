@@ -95,15 +95,14 @@ jobs:
           ANDROID_VERSION_NAME: ${{ steps.version.outputs.name }}
         run: pnpm android:bundle -- --version-code=${{ steps.version.outputs.code }} --version-name=${{ steps.version.outputs.name }}
 
-      - name: Create checksum file
+      - name: Prepare release APK asset
         shell: bash
+        env:
+          VERSION_NAME: ${{ steps.version.outputs.name }}
         run: |
-          APK="android/app/build/outputs/apk/release/app-release.apk"
-          AAB="android/app/build/outputs/bundle/release/app-release.aab"
-          cp "$APK" connect4.apk
-          cp "$AAB" connect4.aab
-          sha256sum connect4.apk > SHA256SUMS.txt
-          sha256sum connect4.aab >> SHA256SUMS.txt
+          APK_SOURCE="android/app/build/outputs/apk/release/app-release.apk"
+          APK_TARGET="connect4-v${VERSION_NAME}.apk"
+          cp "$APK_SOURCE" "$APK_TARGET"
 
       - name: Upload AAB as workflow artifact
         uses: actions/upload-artifact@v4
@@ -118,5 +117,4 @@ jobs:
           generate_release_notes: true
           append_body: true
           files: |
-            connect4.apk
-            SHA256SUMS.txt
+            connect4-v${{ steps.version.outputs.name }}.apk

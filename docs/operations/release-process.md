@@ -14,7 +14,7 @@ A tagged Android release creates two outputs from the exported web assets:
 
 | Output | Distribution |
 | --- | --- |
-| Signed APK | Attached to the GitHub release for direct download, alongside `SHA256SUMS.txt`. |
+| Signed APK | Attached to the GitHub release for direct download with the versioned filename `connect4-vX.Y.Z.apk`. |
 | Signed Android App Bundle (AAB) | Kept as a private Actions artifact for Google Play upload; it is not a public release download. |
 
 The package identity remains stable. Each Play upload needs a higher Android version code, and App Links use the certificate of the distributed application.
